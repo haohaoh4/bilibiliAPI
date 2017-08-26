@@ -16,7 +16,7 @@ def get_click(av):
     text = requests.get(url, bili.headers).content
     click_p = text.find("<click>") + 7
     click_t = re.findall(r'(\w*[0-9]+)\w*', text[click_p:click_p + 30])
-    print aid,cid
+    #print aid,cid
     try:
         click = int(click_t[0])
     except IndexError:
