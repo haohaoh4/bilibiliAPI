@@ -1,5 +1,5 @@
-import click
 import time
+import bili
 
 def main(f,to):
     print "start"
@@ -7,7 +7,7 @@ def main(f,to):
     max_id = -1
     for i in range(f, to):
         try:
-            current_click = click.get_click(i)
+            current_click = bili.get_click(i)
         except IOError,reason:
             continue
         if current_click > max_click:
