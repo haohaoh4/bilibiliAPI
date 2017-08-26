@@ -6,7 +6,10 @@ def main(f,to):
     max_click = -1
     max_id = -1
     for i in range(f, to):
-        current_click = click.get_click(i)
+        try:
+            current_click = click.get_click(i)
+        except IOError,reason:
+            continue
         if current_click > max_click:
             max_click = current_click
             max_id = i
