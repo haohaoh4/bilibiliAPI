@@ -1,23 +1,26 @@
-import time
-import bili
+import video
 
-def main(f,to):
-    print "start"
-    max_click = -1
-    max_id = -1
-    for i in range(f, to):
-        try:
-            current_click = bili.get_click(i)
-        except IOError,reason:
+def com():
+    max_av = 0
+    max_points = 0
+    for i in range(1,100000):
+        data = video.video_data().set_av(i).info
+        if(data.view < 0):
+            print 'av%s is none' % i
             continue
-        if current_click > max_click:
-            max_click = current_click
-            max_id = i
-        if(i % 5 ==0 and i != to - 1):
-            print "%s%%" % (100.0 * (i - f) / (to - f))
-            print "temp max:av%s\tclicks:%s" % (max_id, max_click)
-        time.sleep(0.2)
-    print "100.0%%"
-    return "max:av%s\tclicks:%s" % (max_id, max_click)
+        try:
+            a = (200000 + data.view)/(2 * data.view)
+            b = (data.favorite * 20 + data.coins *10)
+            b = b / (data.view + data.coins +1)
+            points = data.view * a + data.coins * b
+            points = points + data.favorite *20
+        except:
+            print "av%s is error" % i
+            continue
+        if points > max_points:
+            max_av = i
+            max_points = points
+            print "new best:av%s\tpoints:%s" % (i,points)
 
-print main(10000,100000)
+
+com()
