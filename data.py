@@ -58,7 +58,7 @@ def get_num_between(text,text1,text2):
 	return ans
 
 def read_info(aid):
-	infoes = {"view":-1,"danmaku":-1,
+	infoes = {"view":-1,"danmaku":-1,"comment":-1,
 	    "favorite":-1,"coin":-1,"share":-1,
 	    "top":-1,"copyright":False}
 
@@ -69,9 +69,15 @@ def read_info(aid):
 			raise Exception("Can't open http://api.bilibili.com/x/web-interface/archive/stat?aid=%s" % aid)
 		if requests.get("http://bilibili.com/video/av%s" % aid).content.find("error.css")>0:
 			raise IOError("ERROR")
+
+		comment = requests.get("http://api.bilibili.com/x/v2/reply?type=1&oid=%s" % aid)
+		if str(text) != "<Response [200]>":
+			raise IOError("Can't open http://api.bilibili.com/x/v2/reply?type=1&oid=%s" % aid)
 	except IOError:
 		return infoes
 	text = text.content
+	comment = comment.content
+
 	infoes["view"] = get_num_between(text, 'view', 'danmaku')
 	infoes["danmaku"] = get_num_between(text, 'danmaku', 'reply')
 	infoes["favorite"] = get_num_between(text, 'favorite', 'coin')
@@ -80,12 +86,16 @@ def read_info(aid):
 	infoes["top"] = get_num_between(text, 'his-rank', 'no_repaint')
 	copyright = get_num_between(text, 'copyright', 'messagre')
 	infoes["copyright"] = True if copyright == 2 else False
+	acount_p = comment.find('acount')
+	infoes["comment"] = get_num_between(comment[acount_p + 2:acount_p + 100], 'ount', 'count')
+
 	return infoes
 
 class video_info:
 	def __init__(self):
 		self.view = 0
 		self.coins = 0
+		self.comment = 0
 		self.danmaku = 0    #danmaku = danmu
 		self.favorite = 0
 		self.share = 0
@@ -103,5 +113,6 @@ def get_video_info(av):
 	info.top = i["top"]
 	info.view = i["view"]
 	info.copyright = i["copyright"]
+	info.comment = i["comment"]
 	del i
 	return info
